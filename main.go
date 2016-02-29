@@ -51,7 +51,7 @@ func main() {
 
 	if minVersion.Check(v) {
 		log.WithField("version", v).Info("detected Marathon events endpoint")
-		ServeHealthReceiver(config, fh)
+		go ServeHealthReceiver(config, fh)
 		SubscribeToEventStream(config, remote, fh)
 	} else {
 		log.WithField("version", v).Info("detected old Marathon version -- make sure to set up an eventSubscription for this process")
