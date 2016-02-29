@@ -51,6 +51,7 @@ func main() {
 
 	if minVersion.Check(v) {
 		log.WithField("version", v).Info("detected Marathon events endpoint")
+		ServeHealthReceiver(config, fh)
 		SubscribeToEventStream(config, remote, fh)
 	} else {
 		log.WithField("version", v).Info("detected old Marathon version -- make sure to set up an eventSubscription for this process")
@@ -124,6 +125,13 @@ Reconnect:
 			}
 		}
 	}
+}
+
+func ServeHealthReceiver(config *config.Config, fh *ForwardHandler) {
+	http.HandleFunc("/health", HealthHandler)
+
+	log.WithField("port", config.Web.Listen).Info("listening")
+	log.Fatal(http.ListenAndServe(config.Web.Listen, nil))
 }
 
 func ServeWebhookReceiver(config *config.Config, fh *ForwardHandler) {
